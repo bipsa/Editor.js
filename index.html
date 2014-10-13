@@ -11,14 +11,26 @@
 		<div id="editor">Zombie ipsum reversus ab viral inferno, nam rick grimes malum cerebro. De carne lumbering animata corpora quaeritis. Summus brains sit​​, morbo vel maleficia? De apocalypsi gorger omero undead survivor dictum mauris.</div>
 		<a id="bold" href="javascript:;">Bold</a>
 		<a id="undo" href="javascript:;">Undo</a>
+		<a id="italic" href="javascript:;">Italic</a>
 		<script src="assets/javascript/editor.js"></script>
 		<script>
 			var editor = new Editor(document.querySelector("#editor")),
 				boldButton = document.querySelector("#bold"),
+				italicButton = document.querySelector("#italic"),
 				undoButton = document.querySelector("#undo");
+
+			editor.addEventListener("onSelect", function(event){
+				console.log("hello there!", event);
+			});
+
 			boldButton.addEventListener("click", function(event){
 				event.preventDefault();
 				editor.setBold();
+			}, false);
+
+			italicButton.addEventListener("click", function(event){
+				event.preventDefault();
+				editor.setItalic();
 			}, false);
 
 			undoButton.addEventListener("click", function(event){

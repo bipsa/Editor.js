@@ -1,11 +1,11 @@
-;(function(window, document){
+;(function(window){
 
 	'use strict';
 
 
 	/**
 	 * @author Sebastian Romero - Maachi LLC
-	 * This class represents the Medium editor
+	 * This class represents the Editor editor, more info https://developer.mozilla.org/en-US/docs/Rich-Text_Editing_in_Mozilla
 	 * @return {[type]} public reference
 	 */
 	window.Editor = function(){
@@ -14,7 +14,13 @@
 			/** @type {Memento} current steps*/
 			userSteps,
 			/** @type {Number} Steps required for the Memento class */
-			defaultMaxOfSteps = 8;
+			defaultMaxOfSteps = 8,
+			/** @type {Number} reference of the timeout, keeping this globally to clear the event */
+			eventTimeout,
+			/** @type {Number} lapse of time to fire the event */
+			eventTime = 1000,
+			/** @type {Array} events for to handle the selection */
+			selectionEvents = [];
 
 		/**
 		 * Constructor
@@ -32,6 +38,7 @@
 		function editable(isEditable){
 			if(editor){
 				editor.setAttribute("contenteditable", isEditable);
+				editor.designMode = "On";
 			}
 		}
 
@@ -40,6 +47,33 @@
 		 * @param  {[type]} event [description]
 		 */
 		function onFocus(event){
+			var selection,
+				i = 0;
+			if(eventTimeout){
+				clearInterval(eventTimeout);
+			}
+			if(event){
+				selection = getSelection();
+				if(selection){
+					if(selection.length > 0){
+						/** Send the position when there is a selection */
+						eventTimeout = setTimeout(function(){
+							if(selectionEvents.length>0){
+								for(; i<selectionEvents.length; i++){
+									if(typeof selectionEvents[i] == "function"){
+										selectionEvents[i]({
+											"position" : {
+												"x" : event.pageX,
+												"y" : event.pageY
+											}
+										});
+									}
+								}
+							}
+						}, eventTime);
+					}
+				}
+			}
 		}
 
 
@@ -67,6 +101,10 @@
 		}
 
 
+		/**
+		 * Appends the html in the selection
+		 * @param  {[type]} selection html to append in the container
+		 */
 		function appendHTML(selection){
 			document.execCommand('insertHTML', false, selection);
 		}
@@ -75,7 +113,23 @@
 		/** Adds the events to the landing page */
 		function addEvents(){
 			editor.addEventListener('focus', onFocus);
+			editor.addEventListener('click', onFocus);
 			userSteps = new Memento(defaultMaxOfSteps);
+		}
+
+
+		/**
+		 * This method is very usefull if you want to add a special content such as comment or quote
+		 * @param {[type]} tag element that wraps the content
+		 * @param {[type]} className special class name for the container
+		 */
+		function addSpecialContent(tag, className){
+			var selection = getSelection();
+			if(selection){
+				userSteps.add(editor.innerHTML);
+				selection = "<" + tag + " class='" + className + "'>" + selection + "</" + tag + ">";
+				appendHTML(selection);
+			}
 		}
 
 
@@ -95,22 +149,49 @@
 
 		/**
 		 * @public
+		 * Adds an event to the editor
+		 * @return {[Object]} returns editor reference
+		 */
+		editor.prototype.addEventListener = function(event, action){
+			if(typeof action === "function"){
+				selectionEvents.push(action);
+			}
+		};
+
+
+
+		/**
+		 * @public
 		 * Sets the selection in bold
+		 * @return {[Object]} returns editor reference
 		 */
 		editor.prototype.setBold = function(){
 			addHTMLToSelection("strong");
 		};
 
 
+		/**
+		 * @public
+		 * Sets the selection in italic
+		 * @return {[Object]} returns editor reference
+		 */
+		editor.prototype.setItalic = function(){
+			addHTMLToSelection("i");
+		};
+
+
+		/**
+		 * @public
+		 * Undos action
+		 * @return {[Object]} returns editor reference
+		 */
 		editor.prototype.undo = function(){
 			var step = userSteps.undo();
 			if(step){
 				editor.innerHTML = step;
 			}
 		};
-
 		return editor;
-
 	}();
 
 
@@ -176,4 +257,4 @@
 	}();
 
 
-}(window, document));
+}(window));
