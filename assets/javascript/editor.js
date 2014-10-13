@@ -20,7 +20,11 @@
 			/** @type {Number} lapse of time to fire the event */
 			eventTime = 1000,
 			/** @type {Array} events for to handle the selection */
-			selectionEvents = [];
+			selectionEvents = [],
+			/** @type {Object} enumarates the editor events */
+			editorEvents = {
+				"ON_SELECTION" : "onSelect"
+			};
 
 		/**
 		 * Constructor
@@ -147,13 +151,17 @@
 		}
 
 
+		/** @type {Object} Exposes the editor events outside of the editor component */
+		editor.prototype.editorEvents = editorEvents;
+
+
 		/**
 		 * @public
 		 * Adds an event to the editor
 		 * @return {[Object]} returns editor reference
 		 */
 		editor.prototype.addEventListener = function(event, action){
-			if(typeof action === "function"){
+			if(typeof action === "function" && event === editorEvents.ON_SELECTION){
 				selectionEvents.push(action);
 			}
 		};

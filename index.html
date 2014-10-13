@@ -18,8 +18,8 @@
 				boldButton = document.querySelector("#bold"),
 				italicButton = document.querySelector("#italic"),
 				undoButton = document.querySelector("#undo");
-
-			editor.addEventListener("onSelect", function(event){
+				
+			editor.addEventListener(editor.editorEvents.ON_SELECTION, function(event){
 				console.log("hello there!", event);
 			});
 
