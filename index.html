@@ -1,0 +1,30 @@
+<!doctype html>
+<html class="no-js" lang="">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title></title>
+		<meta name="description" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- link rel="stylesheet" href="css/main.css" -->
+	<body>
+		<div id="editor">Zombie ipsum reversus ab viral inferno, nam rick grimes malum cerebro. De carne lumbering animata corpora quaeritis. Summus brains sit​​, morbo vel maleficia? De apocalypsi gorger omero undead survivor dictum mauris.</div>
+		<a id="bold" href="javascript:;">Bold</a>
+		<a id="undo" href="javascript:;">Undo</a>
+		<script src="assets/javascript/editor.js"></script>
+		<script>
+			var editor = new Editor(document.querySelector("#editor")),
+				boldButton = document.querySelector("#bold"),
+				undoButton = document.querySelector("#undo");
+			boldButton.addEventListener("click", function(event){
+				event.preventDefault();
+				editor.setBold();
+			}, false);
+
+			undoButton.addEventListener("click", function(event){
+				event.preventDefault();
+				editor.undo();
+			}, false);
+		</script>
+	</body>
+</html>
