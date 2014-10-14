@@ -46,13 +46,33 @@
 			}
 		}
 
+
+		/**
+		 * Triggers the editor event
+		 * @param  {[type]} event [description]
+		 */
+		function triggerEvent(event){
+			var editorEvent,
+				i = 0;
+			if(selectionEvents.length>0){
+				for(; i<selectionEvents.length; i++){
+					if(typeof selectionEvents[i] == "function"){
+						editorEvent = new EditorEvent();
+						editorEvent.x = event.pageX;
+						editorEvent.y = event.pageY;
+						selectionEvents[i](editorEvent);
+					}
+				}
+			}
+		}
+
+
 		/**
 		 * Event trigger when theres focus in the element
 		 * @param  {[type]} event [description]
 		 */
 		function onFocus(event){
-			var selection,
-				i = 0;
+			var selection;
 			if(eventTimeout){
 				clearInterval(eventTimeout);
 			}
@@ -62,18 +82,7 @@
 					if(selection.length > 0){
 						/** Send the position when there is a selection */
 						eventTimeout = setTimeout(function(){
-							if(selectionEvents.length>0){
-								for(; i<selectionEvents.length; i++){
-									if(typeof selectionEvents[i] == "function"){
-										selectionEvents[i]({
-											"position" : {
-												"x" : event.pageX,
-												"y" : event.pageY
-											}
-										});
-									}
-								}
-							}
+							triggerEvent(event);
 						}, eventTime);
 					}
 				}
@@ -201,6 +210,28 @@
 		};
 		return editor;
 	}();
+
+
+
+	/**
+	 * @author Sebastian Romero - Maachi LLC
+	 * Represents the editor event as an object
+	 */
+	var EditorEvent = function(){
+			/** @type {Number} [description] */
+		var x = 0,
+			/** @type {Number} [description] */
+			y = 0;
+		/**
+		 * @constructor
+		 */
+		function editorEvent(){
+		}
+		editorEvent.prototype.x = x;
+		editorEvent.prototype.y = y;
+		return editorEvent;
+	}();
+
 
 
 	/**
